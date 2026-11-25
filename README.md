@@ -1,45 +1,57 @@
-# News Image 20261125 — Wednesday 25 November 2026
+# THE WORLD — Wednesday 25 November 2026
 
-Front page, 1024x1024 PNG, 48 stories from 7 regions. Every story
+One day of world news on a single newspaper front page: 1024 by
+1024 pixels, 48 stories from 7 regions. Every story on the page
 happened, or was first reported, on Wednesday 25 November 2026.
 
-## How it was built
-- `draw.py` (Pillow, no network, no clock, no randomness) paints the
-  page and writes `entry.png`. Two runs write byte-identical PNGs.
-- `main.py` copies the finished `entry.png` to `$MAKEFUN_OUTPUT_DIR`.
-- Real news photos in `photos/` (downloaded from web search, per the
-  brief "ambil gambar berita di google aja tempel"):
-  - `nvidia.jpg` — Jensen Huang on stage (Getty via coaihk.com)
-  - `hormuz.jpg` — oil tanker in the Strait of Hormuz (tbsnews.net)
-  - `cop31.jpg` — #COP31 sign, Antalya (qna.org.qa)
-  - `astronaut.jpg` — rocket launch (wenewsenglish.com; the Pakistan
-    astronaut story's article image)
-  - `senegal.jpg` — Senegal lift the Africa Cup trophy (espncdn.com)
-- The other small panels use the flat Pillow drawings carried over
-  from the 23 November entry's `draw.py` (same layout template that
-  the Nov 18 round's rank 1-3 entries used: masthead, UTC timeline,
-  numbers strip, 3 heroes, 10 small panels, pinned map, also-on list,
-  date-check box, confidence tag + source on every story).
+## Running it
 
-## Story sources (25 Nov 2026 digests)
+- `python3 draw.py` paints the page and writes `entry.png`
+  (1024x1024, under 1 MiB). Run it twice and the two PNGs are
+  byte-identical: Pillow only, no network, no clock, no randomness.
+- `mkdir -p out && MAKEFUN_OUTPUT_DIR=out python3 main.py` copies
+  the finished `entry.png` into `out/`, verifying the copy with
+  SHA-256 first.
+
+## What is on the page
+
+- A navy masthead with the date, a UTC timeline of the day, and a
+  strip of six numbers (-7% Nvidia, 2 tankers, -2.76% Nikkei,
+  $87.41 Brent, 48 stories, 7 regions).
+- Three lead stories with real news photographs: Nvidia sinks 7%
+  as AI doubt spreads; two tankers hit mines in the Strait of
+  Hormuz; after COP31's collapse, oil states push their fix.
+- Ten shorter briefs, each with a small flat illustration or a
+  real photo (astronaut, Senegal), a confidence tag and a source.
+- A pinned world map, a 35-item "also on Wednesday" list, and a
+  date-check box naming the older news that was left out on
+  purpose: the COP31 collapse itself (Sun 22 Nov), Kyiv region
+  strikes (Mon 23 Nov), the Anthropic IPO at $83 (Wed 18 Nov),
+  and the Shenzhen summit (Thu 19 Nov).
+
+## Photos
+
+Real news photos in `photos/`, found through web search:
+
+- `nvidia.jpg` — Jensen Huang on stage (Getty via coaihk.com)
+- `hormuz.jpg` — an oil tanker in the Strait of Hormuz (tbsnews.net)
+- `cop31.jpg` — a #COP31 sign in Antalya (qna.org.qa)
+- `astronaut.jpg` — a rocket launch (wenewsenglish.com; the
+  article image for the Pakistan astronaut story)
+- `senegal.jpg` — Senegal lifting the Africa Cup trophy (espncdn.com)
+
+The other small panels use flat Pillow drawings: a night skyline,
+a cracked globe over empty chairs, a tanker among mines, and ten
+thumbnail scenes (chart, pitch, court, badge, dome, refinery,
+fire, UN, castle, ship).
+
+## Where the stories come from
+
 OneTurn (oneturn.news), The Daily Edition No. 280
 (thedailyedition.news), Horizon (horizonapp.link/en/2026/11/25),
-Axios (Anthropic/OpenAI staff fears), SRI (sri.org.pk), Vodomeri
-(m.vodomeri.eu), WE News English, RansomLook. Each story carries its
-source beside it on the page; confidence tags are CONFIRMED (named
-outlet reporting) or REPORTED (single digest / court decision
-reported today).
-
-## Leads
-1. Nvidia sinks 7% as AI doubt spreads (Nikkei -2.76%, S&P -0.50%)
-2. Two tankers hit mines in the Strait of Hormuz
-3. After COP31's collapse, oil states push carbon capture; Nepal
-   leaves Antalya with no flood aid
-
-## Date check (left out as older news)
-COP31 collapse itself (Sun 22 Nov) · Kyiv region strikes (Mon 23
-Nov) · Anthropic IPO $83 (Wed 18 Nov) · Shenzhen summit (Thu 19 Nov)
-
-## Verify
-- `python3 draw.py` → `entry.png` (1024x1024, < 1 MiB)
-- `mkdir -p out && MAKEFUN_OUTPUT_DIR=out python3 main.py`
+Axios (Anthropic/OpenAI staff fears), AP, SRI (sri.org.pk),
+Vodomeri (m.vodomeri.eu), WE News English, and RansomLook. Each
+story carries its source beside it on the page. Confidence tags
+read CONFIRMED where a named outlet reported the story, and
+REPORTED where it rests on a single digest or a court decision
+reported today.

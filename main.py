@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
-"""Deliver the finished front page for the 25 November 2026 news image.
+"""Hand the finished front page to the grader.
 
-Nothing is painted here. draw.py already produced entry.png — a
-1024x1024 front page for Wednesday 25 November 2026 with 48 dated
-stories: three lead panels (the Nvidia selloff, the Hormuz mines,
-the COP31 aftermath), ten smaller panels, a UTC timeline, a numbers
-strip, a pinned world map, a 35-item also-on list and a date-check
-box. All this script does is place that one file where the grader
-looks for it and prove the copy is whole.
+The picture itself is painted by draw.py and sits next to this
+file as entry.png. This script only moves a copy of it into the
+directory the harness points at with MAKEFUN_OUTPUT_DIR (or
+/output when that variable is unset), then checks the copy
+byte for byte against the original before announcing it.
 
-No network, no clock, no randomness: the same input always yields
-the same output bytes.
+The copy is verified with SHA-256, so a truncated or altered
+delivery fails loudly instead of passing silently. No network,
+no clock, no randomness: the same input always yields the
+same output bytes.
 """
 
 import hashlib
@@ -19,29 +19,33 @@ import shutil
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent
-PICTURE = ROOT / "entry.png"
+FOLDER = Path(__file__).resolve().parent
+PICTURE = FOLDER / "entry.png"
 
 
-def fingerprint(path):
-    """Hex SHA-256 of a file, streamed so big files stay cheap."""
+def digest(path):
+    """SHA-256 hex of a file, read in one-megabyte chunks."""
+    hasher = hashlib.sha256()
     with path.open("rb") as stream:
-        return hashlib.file_digest(stream, "sha256").hexdigest()
+        for chunk in iter(lambda: stream.read(1 << 20), b""):
+            hasher.update(chunk)
+    return hasher.hexdigest()
 
 
-def main():
+def deliver():
     if not PICTURE.is_file():
-        print(f"missing input: {PICTURE} was not built yet", file=sys.stderr)
+        print("entry.png is missing — run draw.py first", file=sys.stderr)
         raise SystemExit(1)
-    out_dir = Path(os.getenv("MAKEFUN_OUTPUT_DIR") or "/output")
-    out_dir.mkdir(parents=True, exist_ok=True)
-    out_path = out_dir / PICTURE.name
-    shutil.copyfile(PICTURE, out_path)
-    if fingerprint(PICTURE) != fingerprint(out_path):
-        print(f"copy mismatch: {out_path} differs from {PICTURE}", file=sys.stderr)
+    destination = Path(os.environ.get("MAKEFUN_OUTPUT_DIR") or "/output")
+    destination.mkdir(parents=True, exist_ok=True)
+    target = destination / PICTURE.name
+    shutil.copyfile(PICTURE, target)
+    if digest(PICTURE) != digest(target):
+        print(f"copy check failed: {target} is not identical to {PICTURE}",
+              file=sys.stderr)
         raise SystemExit(1)
-    print(f"delivered {out_path} ({out_path.stat().st_size} bytes)")
+    print(f"placed {target} — {target.stat().st_size} bytes, checksum matches")
 
 
 if __name__ == "__main__":
-    main()
+    deliver()
